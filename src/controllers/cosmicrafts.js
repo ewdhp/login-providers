@@ -1,6 +1,6 @@
 import express from 'express';
 import { cosmicrafts } from '../../../../declarations/cosmicrafts/index.js';
-import { parseBigIntAndPrincipal } from '../services/motoko/utils.js';
+import { parseBigIntAndPrincipal } from '../services/web3/motoko/utils.js';
 
 const router = express.Router();
 

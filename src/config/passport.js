@@ -50,26 +50,6 @@ const authStrategies = [
       callbackURL: process.env.INSTAGRAM_CALLBACK_URL,
       profileFields: ['id', 'email', 'name', 'picture.width(400)']
     }
-  },
-  {
-    name: 'google',
-    Strategy: GoogleStrategy,
-    options: {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL,
-      scope: ['profile', 'email']
-    }
-  },
-  {
-    name: 'microsoft',
-    Strategy: MicrosoftStrategy,
-    options: {
-      clientID: process.env.MICROSOFT_CLIENT_ID,
-      clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
-      callbackURL: process.env.MICROSOFT_CALLBACK_URL,
-      scope: ['user.read']
-    }
   }
 ];
 
