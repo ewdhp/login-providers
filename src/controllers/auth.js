@@ -1,18 +1,15 @@
 import passport from 'passport';
 import { authStrategies } from '../config/passport.js';
-
+import TokenService from '../services/token/jwt_token.js'; // Import TokenService
 
 const AuthController = {};
 
-authStrategies.forEach(({ name }) => {
-  
+authStrategies.forEach(({ name }) => {  
   AuthController[`${name}Auth`] = passport
-  .authenticate( name, { scope: [] });
-
+    .authenticate( name, { scope: [] });
   AuthController[`${name}Cbk`] = (req, res, next) => {
-
     passport.authenticate(name, (err, user, info) => {
-
+      
       if (err) {
         return res.status(500)
         .json({ 
@@ -39,7 +36,8 @@ authStrategies.forEach(({ name }) => {
            });
         }
 
-        const token = generateToken(user);
+        // Use TokenService to generate the token
+        const token = TokenService.generateToken(user);
         return res.status(200)
         .json({ 
           success: true, 
