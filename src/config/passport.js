@@ -61,15 +61,6 @@ authStrategies.forEach(({ name, Strategy, options }) => {
   }));
 });
 
-// Serialize user information into the session
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-// Deserialize user information from the session
-passport.deserializeUser((obj, done) => {
-  done(null, obj);
-});
 
 // Export the authentication strategies
 export { authStrategies };

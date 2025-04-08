@@ -5,11 +5,12 @@ import TokenService from '../services/token/jwt_token.js'; // Import TokenServic
 
 const router = express.Router();
 
+// Define routes and logic together
 authStrategies.forEach(({ name }) => {
-  // Define the authentication route
+  // Authentication route
   router.get(`/${name}`, passport.authenticate(name, { scope: [] }));
 
-  // Define the callback route
+  // Callback route
   router.get(`/${name}/cbk`, (req, res, next) => {
     passport.authenticate(name, (err, user, info) => {
       if (err) {
