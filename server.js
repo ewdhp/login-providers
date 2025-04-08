@@ -3,8 +3,7 @@ import session from 'express-session';
 import passport from 'passport';
 import dotenv from 'dotenv';
 
-import authRoutes from './src/apis/auth.js';
-import cosmicraftsRoutes from './src/apis/cosmicrafts.js';
+import authRoutes from './src/controllers/auth.js';
 
 // Load environment variables
 dotenv.config();
@@ -27,8 +26,6 @@ app.use(express.json());
 
 // Routes
 app.use('/auth', authRoutes);
-app.use('/cosmicrafts', cosmicraftsRoutes);
-
 
 // Start Server
 const PORT = process.env.PORT || 3000;
