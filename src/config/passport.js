@@ -1,10 +1,8 @@
+import dotenv from 'dotenv';
 import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as DiscordStrategy } from 'passport-discord';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 import { Strategy as TwitterStrategy } from 'passport-twitter';
-import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
@@ -61,6 +59,4 @@ authStrategies.forEach(({ name, Strategy, options }) => {
   }));
 });
 
-
-// Export the authentication strategies
 export { authStrategies };
