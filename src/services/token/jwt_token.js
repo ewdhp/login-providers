@@ -4,7 +4,10 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-const secret = process.env.JWT_SECRET || 'fallback_secret_key'; // Use fallback only for development
+const secret = process.env.JWT_SECRET;
+if (!secret) {
+  throw new Error('JWT_SECRET is not set in env');
+}
 const tokenExpiry = '1h'; // Token expiration time
 
 const TokenService = {

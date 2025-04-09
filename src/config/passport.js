@@ -1,8 +1,6 @@
 import dotenv from 'dotenv';
 import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { Strategy as DiscordStrategy } from 'passport-discord';
-import { Strategy as TwitterStrategy } from 'passport-twitter';
 
 // Load environment variables
 dotenv.config();
@@ -10,53 +8,40 @@ dotenv.config();
 // Define authentication strategies
 const authStrategies = [
   {
-    name: 'twitter',
-    Strategy: TwitterStrategy,
-    options: {
-      consumerKey: process.env.TWITTER_CONSUMER_KEY,
-      consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-      callbackURL: process.env.TWITTER_CALLBACK_URL,
-      includeEmail: true
-    }
-  },
-  {
-    name: 'discord',
-    Strategy: DiscordStrategy,
-    options: {
-      clientID: process.env.DISCORD_CLIENT_ID,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET,
-      callbackURL: process.env.DISCORD_CALLBACK_URL,
-      scope: ['identify', 'email']
-    }
-  },
-  {
     name: 'facebook',
     Strategy: FacebookStrategy,
     options: {
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
       callbackURL: process.env.FACEBOOK_CALLBACK_URL,
-      profileFields: ['id', 'email', 'name', 'picture.width(400)']
-    }
+      profileFields: ['id', 'email', 'name', 'picture.width(400)'],
+    },
   },
-  {
-    name: 'instagram',
-    Strategy: FacebookStrategy,
-    options: {
-      clientID: process.env.INSTAGRAM_CLIENT_ID,
-      clientSecret: process.env.INSTAGRAM_CLIENT_SECRET,
-      callbackURL: process.env.INSTAGRAM_CALLBACK_URL,
-      profileFields: ['id', 'email', 'name', 'picture.width(400)']
-    }
-  }
 ];
 
 // Initialize each strategy with its options
 authStrategies.forEach(({ name, Strategy, options }) => {
-  passport.use(name, new Strategy (options,
-    (accessToken, refreshToken, profile, done) => {
-    return done(null, profile);
-  }));
+  passport.use(
+    name,
+    new Strategy(options, (accessToken, refreshToken, profile, done) => {
+      console.log('Facebook profile:', profile);
+      // Pass the profile to the next middleware
+      return done(null, profile);
+    })
+  );
+});
+
+// Serialize user into the session
+passport.serializeUser((user, done) => {
+  // Store only the user ID in the session
+  done(null, user.id);
+});
+
+// Deserialize user from the session
+passport.deserializeUser((id, done) => {
+  // Retrieve the user object based on the ID
+  // In a real application, you would fetch the user from the database
+  done(null, { id });
 });
 
 export { authStrategies };

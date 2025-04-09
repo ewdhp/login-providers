@@ -5,15 +5,24 @@ import TokenService from '../services/token/jwt_token.js'; // Import TokenServic
 
 const router = express.Router();
 
+// Log registered strategies
+console.log('Registered auth strategies:', authStrategies.map(({ name }) => name));
+
 // Define routes and logic together
 authStrategies.forEach(({ name }) => {
   // Authentication route
-  router.get(`/${name}`, passport.authenticate(name, { scope: [] }));
+  router.get(`/${name}`, (req, res, next) => {
+    console.log(`Initiating ${name} authentication...`);
+    passport.authenticate(name, { scope: [] })(req, res, next);
+  });
 
   // Callback route
   router.get(`/${name}/cbk`, (req, res, next) => {
+    console.log(`${name} callback hit with query:`, req.query);
+
     passport.authenticate(name, (err, user, info) => {
       if (err) {
+        console.error(`${name} authentication error:`, err);
         return res.status(500).json({
           success: false,
           message: 'Authentication failed',
@@ -21,6 +30,7 @@ authStrategies.forEach(({ name }) => {
         });
       }
       if (!user) {
+        console.warn(`${name} authentication failed:`, info);
         return res.status(401).json({
           success: false,
           message: 'Authentication failed',
@@ -29,13 +39,14 @@ authStrategies.forEach(({ name }) => {
       }
       req.logIn(user, (err) => {
         if (err) {
+          console.error(`${name} login error:`, err);
           return res.status(500).json({
             success: false,
             message: 'Login failed',
             error: err,
           });
         }
-
+        console.log(`${name} user logged in:`, user);
         // Use TokenService to generate the token
         const token = TokenService.generateToken(user);
         return res.status(200).json({
