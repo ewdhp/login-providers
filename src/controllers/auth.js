@@ -18,7 +18,7 @@ authStrategies.forEach(({ name }) => {
 
   // Callback route
   router.get(`/${name}/cbk`, (req, res, next) => {
-    console.log(`${name} callback hit with query:`, req.query);
+   
 
     passport.authenticate(name, (err, user, info) => {
       if (err) {
