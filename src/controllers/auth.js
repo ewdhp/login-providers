@@ -6,10 +6,14 @@ import TokenService from '../services/token/jwt_token.js'; // Import TokenServic
 const router = express.Router();
 
 // Log registered strategies
-console.log('Registered auth strategies:', authStrategies.map(({ name }) => name));
+console.log(
+  'Registered auth strategies:', 
+  authStrategies.map(({ name }) => name)
+);
 
 // Define routes and logic together
 authStrategies.forEach(({ name }) => {
+  
   // Authentication route
   router.get(`/${name}`, (req, res, next) => {
     console.log(`Initiating ${name} authentication...`);
@@ -18,8 +22,6 @@ authStrategies.forEach(({ name }) => {
 
   // Callback route
   router.get(`/${name}/cbk`, (req, res, next) => {
-   
-
     passport.authenticate(name, (err, user, info) => {
       if (err) {
         console.error(`${name} authentication error:`, err);
@@ -37,6 +39,7 @@ authStrategies.forEach(({ name }) => {
           error: info,
         });
       }
+
       req.logIn(user, (err) => {
         if (err) {
           console.error(`${name} login error:`, err);
@@ -47,7 +50,6 @@ authStrategies.forEach(({ name }) => {
           });
         }
         console.log(`${name} user logged in:`, user);
-        // Use TokenService to generate the token
         const token = TokenService.generateToken(user);
         return res.status(200).json({
           success: true,

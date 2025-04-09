@@ -5,10 +5,9 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401)
-    .json({ 
-      success: false, 
-      message: 'Access token is missing' 
+    return res.status(401).json({
+      success: false,
+      message: 'Token missing', // Standardized message
     });
   }
 
@@ -17,10 +16,9 @@ const authenticateToken = (req, res, next) => {
     req.user = decoded; // Attach the decoded user info to the request object
     next(); // Proceed to the next middleware or controller
   } catch (err) {
-    return res.status(403)
-    .json({ 
-      success: false, 
-      message: 'Invalid or expired token' 
+    return res.status(403).json({
+      success: false,
+      message: 'Invalid token', // Standardized message
     });
   }
 };
