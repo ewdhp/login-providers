@@ -15,8 +15,9 @@ console.log(
 // Define routes and logic together
 authStrategies.forEach(({ name }) => {  
   router.get(`/${name}`, (req, res, next) => {
-    passport.authenticate
-    (name, { scope: [] })(req, res, next);});
+    passport.authenticate(name, { scope: [] })
+    (req, res, next);});
+    
   router.get(`/${name}/cbk`, (req, res, next) => {
     passport.authenticate(name, (err, user, info) => {
       if (err) return ResponseHandler.internalError
@@ -24,15 +25,18 @@ authStrategies.forEach(({ name }) => {
       if (!user) return ResponseHandler.unauthorized
         (res, 'Authentication failed');
       req.logIn(user, (err) => {
-        if (err) return ResponseHandler
-          .internalError(res, 'Login failed');
+        if (err) return 
+          ResponseHandler.internalError
+          (res, 'Login failed');
         const accessToken = user.accessToken;
-        if (!accessToken) return ResponseHandler
-          .internalError(res, 'Access token is missing');
+        if (!accessToken) return 
+          ResponseHandler.internalError
+          (res, 'Access token is missing');
         req.session.accessToken = accessToken;
-        const token = TokenService.generateToken(user);
+        const token = TokenService
+          .generateToken(user);
         return ResponseHandler.success(
-          res, 'Authentication successful', {
+          res, 'Authenticated', {
           token,accessToken, 
         });
       });

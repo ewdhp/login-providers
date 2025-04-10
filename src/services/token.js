@@ -33,7 +33,8 @@ const TokenService = {
   refreshToken: (token) => {
     try {
       const payload = jwt.verify
-      (token, secret, { ignoreExpiration: true });
+      ( token, secret, 
+      { ignoreExpiration: true });
       delete payload.iat;
       delete payload.exp; 
       return jwt.sign(payload, secret, 

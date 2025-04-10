@@ -1,32 +1,13 @@
-import axios from 'axios';
+import BaseService from '../BaseService.js';
 
-class FacebookService {
+class FacebookService extends BaseService {
   constructor(accessToken) {
-    this.accessToken = accessToken;
-    this.baseUrl = 'https://graph.facebook.com/v12.0';
-  }
-
-  async request(endpoint, params = {}) {
-    try {
-      const response = await axios
-        .get(`${this.baseUrl}/${endpoint}`, {
-          params: {
-            access_token: this.accessToken,
-            ...params,
-          },
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error
-      (`Failed to fetch from Facebook 
-        (${endpoint}): 
-        ${error.message}`);
-    }
+    super(accessToken, 
+      'https://graph.facebook.com/v12.0');
   }
 
   async user(params) {
-    return this.request
-    ('me', params);
+    return this.request('me', params);
   }
 }
 
