@@ -26,8 +26,7 @@ router.all('/facebook/:action',
     if (typeof fbs
       [action] !== 'function')
       return ResponseHandler.notFound
-        (res, `Action "${action}" 
-        not found in FacebookService`);
+        (res, `Action "${action}" not found`);
     const result = await fbs[action](req.query);  
     return ResponseHandler.success
     (res, `Facebook ${action} 

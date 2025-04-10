@@ -9,22 +9,24 @@ class FacebookService {
   async request(endpoint, params = {}) {
     try {
       const response = await axios
-      .get(`${this.baseUrl}/${endpoint}`, {
-        params: {
-          access_token: this.accessToken,
-          ...params,
-        },
+        .get(`${this.baseUrl}/${endpoint}`, {
+          params: {
+            access_token: this.accessToken,
+            ...params,
+          },
       });
       return response.data;
     } catch (error) {
-      throw new Error(`Failed to fetch from Facebook 
-        (${endpoint}): ${error.message}`);
+      throw new Error
+      (`Failed to fetch from Facebook 
+        (${endpoint}): 
+        ${error.message}`);
     }
   }
 
   async user(params) {
-    console.log('Fetching user details...');
-    return this.request('me', params);
+    return this.request
+    ('me', params);
   }
 }
 

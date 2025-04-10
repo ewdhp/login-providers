@@ -15,8 +15,7 @@ const TokenService = {
   generateToken: (user) => {
     const payload = {
       id: user.id,
-      email: user.email,
-    };
+      email: user.email,};
     return jwt.sign(payload, secret, 
       { expiresIn: tokenExpiry });
   },
@@ -34,8 +33,7 @@ const TokenService = {
   refreshToken: (token) => {
     try {
       const payload = jwt.verify
-      (token, secret, 
-        { ignoreExpiration: true });
+      (token, secret, { ignoreExpiration: true });
       delete payload.iat;
       delete payload.exp; 
       return jwt.sign(payload, secret, 
