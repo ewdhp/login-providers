@@ -10,7 +10,7 @@ const validateAccessToken = (req, res, next) => {
   if (!access_token) {
     return ResponseHandler.unauthorized(res, 'Access token is missing');
   }
-  req.accessToken = access_token; // Attach the access token to the request object
+  req.accessToken = access_token;
   next();
 };
 
@@ -21,23 +21,35 @@ router.all('/facebook/:action', validateAccessToken, async (req, res) => {
 
   try {
     console.log(`Processing Facebook action: ${action}`);
-    const facebookService = SFactory.getService('facebook', accessToken);
-
+    const facebookService = SFactory
+    getService('facebook', accessToken);
     // Check if the action exists in the FacebookService
     if (typeof facebookService[action] !== 'function') {
-      console.error(`Action "${action}" not found in FacebookService`);
-      return ResponseHandler.notFound(res, `Action "${action}" not found in FacebookService`);
+      console.error
+      (`Action "${action}" 
+        not found in FacebookService`);
+      return ResponseHandler
+      .notFound(res, 
+        `Action "${action}" 
+        not found in FacebookService`);
     }
-
     // Call the appropriate method dynamically
     const result = await facebookService[action](req.query);
-    console.log(`Action "${action}" executed successfully with result:`, result);
+    console.log(`Action "${action}" 
+        executed successfully with result:`, 
+        result);
 
     // Return a consistent response format
-    return ResponseHandler.success(res, `Facebook ${action} retrieved successfully`, result);
+    return ResponseHandler.success
+    (res, `Facebook ${action} 
+        retrieved successfully`, result);
   } catch (error) {
-    console.error(`Error processing Facebook action "${action}":`, error.message);
-    return ResponseHandler.internalError(res, error.message);
+    console.error
+    (`Error processing Facebook action "${action}":`,
+         error.message);
+    return ResponseHandler
+    .internalError
+    (res, error.message);
   }
 });
 
