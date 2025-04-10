@@ -16,20 +16,26 @@ const validateAccessToken = (req, res, next) => {
 
 // Route to handle all Facebook actions dynamically
 router.all('/facebook/:action', validateAccessToken, async (req, res) => {
-  const { action } = req.params; // Extract the action from the route
+  const { action } = req.params;
   const { accessToken } = req;
+
+  console.log(`Processing action: ${action}`);
+  console.log(`Access Token: ${accessToken}`);
 
   try {
     const facebookService = SFactory.getService('facebook', accessToken);
 
-    // Dynamically call the method based on the action
     if (typeof facebookService[action] !== 'function') {
+      console.error(`Action "${action}" not found in FacebookService`);
       return ResponseHandler.notFound(res, `Action "${action}" not found in FacebookService`);
     }
 
-    const result = await facebookService[action](req.query); // Call the method dynamically
+    const result = await facebookService[action](req.query);
+    console.log(`Action "${action}" executed successfully with result:`, result);
+
     return ResponseHandler.success(res, `Facebook ${action} retrieved successfully`, result);
   } catch (error) {
+    console.error(`Error processing action "${action}":`, error.message);
     return ResponseHandler.internalError(res, error.message);
   }
 });

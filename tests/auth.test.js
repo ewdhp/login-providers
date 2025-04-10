@@ -3,14 +3,16 @@ import supertest from 'supertest';
 import { describe, it, expect } from 'vitest';
 
 describe('Authentication and Facebook Dynamic Endpoint Flow', () => {
-  const accessToken = 'EAAYfTd0FPvMBO4zgKYScl8KHC0DpJZC8jqvC4EQZCkivGqZCX1ZAUBSF8SjvaiDvytZC12d9gpENW2NWqL3dLCNfJEBeIptyknpaDRSV0pGWQsTHGprSZAsXnDg9cI0nEdyJouqO7AuQ44d6b37xVNEXAgPeu9FiHhdUsUzFekyxjlX2Wr5clInrjzJ0AzRszktr7ZCJn28khBABhYcSzwCANzxPMuhwZCBj4p5VbS3Jn5811dEwpDFYvrAOtug4aiZCM8QZDZD';
+  const serverToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMjEwOTMzODgwNDQ2MDU2MyIsImlhdCI6MTc0NDI0NDYxNCwiZXhwIjoxNzQ0MjQ4MjE0fQ.nNRMPWRPpWVNdaEADj_zOHkJW228J8B7Zix9xa2iZ0A';
+  const facebookAccessToken = 'EAAYfTd0FPvMBO7aDQrGxqPgrzFE1iipin7UpKqaNftfE1vaVStpPCP3bpZCxL0WMbHF1cIBMiJgdqOwmrG3lqRcYs7aZCdNxc5LyHZCuQzNT0XirLK00hs9OXy0KCbJqlnaGyZClZCoB4gsdrJNYK7aw2AySFpN5f6tmskqJbWQnxppl0EWv8vWg5uFkmjQl0bBytckG7OPC5UCdq89UtBhSH5C1KkI8OltzA4li9DfaExmbut3noZCXCudzDCkyUDXAZDZD';
 
   // Step 1: Access the Facebook user details with the access token
   it('should retrieve Facebook user details with the access token', async () => {
-     console.log('Sending request to /facebook/user...');
+    console.log('Sending request to /facebook/user...');
     const res = await supertest(app)
-      .get('/facebook/user') // Call the dynamic Facebook endpoint for "user" action
-      .query({ access_token: accessToken }); // Pass the access token as a query parameter
+      .get('/api/facebook/user') // Call the dynamic Facebook endpoint for "user" action
+      .query({ access_token: facebookAccessToken }) // Pass the Facebook access token as a query parameter
+      .set('Authorization', `Bearer ${serverToken}`); // Pass the server token in the Authorization header
 
     expect(res.status).toBe(200); // Expect 200 OK
     expect(res.body).toHaveProperty('success', true);
@@ -23,8 +25,9 @@ describe('Authentication and Facebook Dynamic Endpoint Flow', () => {
   // Step 2: Access the Facebook friends list with the access token
   it('should retrieve Facebook friends with the access token', async () => {
     const res = await supertest(app)
-      .get('/facebook/friends') // Call the dynamic Facebook endpoint for "friends" action
-      .query({ access_token: accessToken }); // Pass the access token as a query parameter
+      .get('/api/facebook/friends') // Call the dynamic Facebook endpoint for "friends" action
+      .query({ access_token: facebookAccessToken }) // Pass the Facebook access token as a query parameter
+      .set('Authorization', `Bearer ${serverToken}`); // Pass the server token in the Authorization header
 
     expect(res.status).toBe(200); // Expect 200 OK
     expect(res.body).toHaveProperty('success', true);
@@ -36,8 +39,9 @@ describe('Authentication and Facebook Dynamic Endpoint Flow', () => {
   // Step 3: Access the Facebook photos with the access token
   it('should retrieve Facebook photos with the access token', async () => {
     const res = await supertest(app)
-      .get('/facebook/photos') // Call the dynamic Facebook endpoint for "photos" action
-      .query({ access_token: accessToken }); // Pass the access token as a query parameter
+      .get('/api/facebook/photos') // Call the dynamic Facebook endpoint for "photos" action
+      .query({ access_token: facebookAccessToken }) // Pass the Facebook access token as a query parameter
+      .set('Authorization', `Bearer ${serverToken}`); // Pass the server token in the Authorization header
 
     expect(res.status).toBe(200); // Expect 200 OK
     expect(res.body).toHaveProperty('success', true);
