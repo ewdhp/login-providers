@@ -7,7 +7,7 @@ import session from 'express-session';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { authenticateToken } from './src/middleware/token.js';
+import { verifyTokenMiddleware } from './src/middleware/token.js';
 import authRoutes from './src/controllers/auth.js';
 import { socialRoutes } from './src/controllers/social.js';
 
@@ -19,8 +19,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // Middleware
 app.use(helmet()); // Secure HTTP headers
-app.use(cors()); // Enable CORS
-app.use(morgan('combined')); // Logging
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*', credentials: true })); 
+app.use(morgan(isProduction ? 'combined' : 'dev')); // Logging
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static('public')); // Serve static files
@@ -28,10 +28,10 @@ app.use(express.static('public')); // Serve static files
 // Configure session middleware
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'default_secret',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: isProduction },
+    cookie: { secure: isProduction, httpOnly: true, maxAge: 3600000 }, // 1 hour
   })
 );
 
@@ -41,8 +41,7 @@ app.use(passport.session());
 
 // Routes
 app.use('/auth', authRoutes);
-app.use('/api', authenticateToken, socialRoutes);
-
+app.use('/api', verifyTokenMiddleware(), socialRoutes);
 
 // Default route for undefined endpoints
 app.use((req, res) => {
@@ -56,15 +55,17 @@ app.use((err, req, res, next) => {
 });
 
 // Validate SSL files
-if (!fs.existsSync('./certs/server.key') || !fs.existsSync('./certs/server.cert')) {
+const sslKeyPath = './certs/server.key';
+const sslCertPath = './certs/server.cert';
+if (!fs.existsSync(sslKeyPath) || !fs.existsSync(sslCertPath)) {
   console.error('SSL certificate or key file is missing.');
   process.exit(1);
 }
 
 // Load SSL certificate and key
 const sslOptions = {
-  key: fs.readFileSync('./certs/server.key'),
-  cert: fs.readFileSync('./certs/server.cert'),
+  key: fs.readFileSync(sslKeyPath),
+  cert: fs.readFileSync(sslCertPath),
 };
 
 // Start HTTPS Server only if this file is run directly
