@@ -4,30 +4,41 @@ import SFactory from '../services/factory.js';
 
 const router = express.Router();
 
-router.all('/facebook/:action', async (req, res) => {
-  console.log('Session:', req.session); // Debugging: Log session data
-  console.log('User:', req.user); // Debugging: Log user data
-  console.log('Access Token:', req.query.access_token); // Debugging: Log the access token
-  console.log('Action:', req.params.action); // Debugging: Log the requested action
-
-  if (!req.query.access_token) {
+// Middleware to validate access token
+const validateAccessToken = (req, res, next) => {
+  const { access_token } = req.query;
+  if (!access_token) {
     return ResponseHandler.unauthorized(res, 'Access token is missing');
   }
+  req.accessToken = access_token; // Attach the access token to the request object
+  next();
+};
+
+// Route to handle all Facebook actions dynamically
+router.all('/facebook/:action', validateAccessToken, async (req, res) => {
+  const { action } = req.params;
+  const { accessToken } = req;
 
   try {
-    const { action } = req.params;
-    const facebookService = SFactory.getService('facebook', req.query.access_token);
+    console.log(`Processing Facebook action: ${action}`);
+    const facebookService = SFactory.getService('facebook', accessToken);
 
+    // Check if the action exists in the FacebookService
     if (typeof facebookService[action] !== 'function') {
       console.error(`Action "${action}" not found in FacebookService`);
       return ResponseHandler.notFound(res, `Action "${action}" not found in FacebookService`);
     }
 
+    // Call the appropriate method dynamically
     const result = await facebookService[action](req.query);
+    console.log(`Action "${action}" executed successfully with result:`, result);
+
+    // Return a consistent response format
     return ResponseHandler.success(res, `Facebook ${action} retrieved successfully`, result);
   } catch (error) {
-    console.error('Error in /facebook/:action route:', error.message);
+    console.error(`Error processing Facebook action "${action}":`, error.message);
     return ResponseHandler.internalError(res, error.message);
   }
 });
+
 export const facebookRoutes = router;
