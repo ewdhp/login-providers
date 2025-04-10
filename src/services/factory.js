@@ -5,40 +5,60 @@ import { fileURLToPath } from 'url';
 class SFactory {
   constructor() {
     this.services = {};
-    this.loadServices();
+    this.isLoaded = false;
+    this.loadServices().then(() => {
+      this.isLoaded = true;
+      console.log('All services loaded');
+    }).catch((err) => console.error
+      ('Error loading services:', err));
   }
 
-  // Dynamically load all services with a `main.js` file
-  async loadServices() {
-    // Emulate __dirname in ES modules
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
+  async waitUntilLoaded() {
+  while (!this.isLoaded) 
+    await new Promise
+    ((resolve) => setTimeout(resolve, 10)); 
 
-    const servicesDir = path.resolve(__dirname); // Path to the `services` directory
+}
 
-    // Read all subdirectories in the `services` directory
-    const subdirectories = fs.readdirSync(servicesDir, { withFileTypes: true })
-      .filter((dirent) => dirent.isDirectory()) // Only include directories
-      .map((dirent) => dirent.name);
+async loadServices() {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
 
-    // Dynamically import `main.js` from each subdirectory
-    for (const subdir of subdirectories) {
-      const servicePath = path.join(servicesDir, subdir, 'main.js');
-      if (fs.existsSync(servicePath)) {
-        const ServiceClass = (await import(servicePath)).default; // Use dynamic import
-        this.services[subdir] = ServiceClass; // Map the service name to the class
-      }
+  const servicesDir = path.resolve(__dirname);
+  console.log
+  ('Loading services from directory:', 
+    servicesDir);
+
+  const subdirectories = fs.readdirSync
+    (servicesDir, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
+  for (const subdir of subdirectories) {
+    const servicePath = path
+    .join(servicesDir, subdir, 'main.js');
+    console.log(`Checking for service in: 
+      ${servicePath}`);
+    if (fs.existsSync(servicePath)) {
+      console.log(`Loading service: ${subdir}`);
+      const ServiceClass = (await 
+        import(servicePath)).default;
+      this.services[subdir] = ServiceClass;
+    } else {
+      console.warn(`Service not found in: 
+        ${servicePath}`);
     }
   }
+}
 
-  // Get a service instance dynamically
-  getService(serviceName, ...args) {
-    const ServiceClass = this.services[serviceName];
-    if (!ServiceClass) {
-      throw new Error(`Service "${serviceName}" not found`);
-    }
-    return new ServiceClass(...args); // Create a new instance with the provided arguments
-  }
+async getService(serviceName, ...args) {
+  if (!this.isLoaded) 
+    throw new Error('Services are not loaded yet');
+  const ServiceClass = this.services[serviceName];
+  if (!ServiceClass) throw new Error
+    (`Service "${serviceName}" not found`);
+  const instance = new ServiceClass(...args);
+  return instance;
+}
 }
 
 export default new SFactory();

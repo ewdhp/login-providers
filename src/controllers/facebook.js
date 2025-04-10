@@ -8,35 +8,36 @@ const router = express.Router();
 const validateAccessToken = (req, res, next) => {
   const { access_token } = req.query;
   if (!access_token) {
-    return ResponseHandler.unauthorized(res, 'Access token is missing');
+    return ResponseHandler.unauthorized
+    (res, 'Access token is missing');
   }
-  req.accessToken = access_token; // Attach the access token to the request object
+  req.accessToken = access_token; 
   next();
 };
 
 // Route to handle all Facebook actions dynamically
-router.all('/facebook/:action', validateAccessToken, async (req, res) => {
+router.all('/facebook/:action', 
+  validateAccessToken, async (req, res) => {
   const { action } = req.params;
   const { accessToken } = req;
-
-  console.log(`Processing action: ${action}`);
-  console.log(`Access Token: ${accessToken}`);
-
   try {
-    const facebookService = SFactory.getService('facebook', accessToken);
-
-    if (typeof facebookService[action] !== 'function') {
-      console.error(`Action "${action}" not found in FacebookService`);
-      return ResponseHandler.notFound(res, `Action "${action}" not found in FacebookService`);
-    }
-
-    const result = await facebookService[action](req.query);
-    console.log(`Action "${action}" executed successfully with result:`, result);
-
-    return ResponseHandler.success(res, `Facebook ${action} retrieved successfully`, result);
+    const fbs = SFactory.getService
+      ('facebook', accessToken);
+    if (typeof fbs
+      [action] !== 'function')
+      return ResponseHandler.notFound
+        (res, `Action "${action}" 
+        not found in FacebookService`);
+    const result = await fbs[action](req.query);  
+    return ResponseHandler.success
+    (res, `Facebook ${action} 
+      retrieved successfully`, 
+      { data: result });
   } catch (error) {
-    console.error(`Error processing action "${action}":`, error.message);
-    return ResponseHandler.internalError(res, error.message);
+    console.error(error.stack); 
+    return ResponseHandler
+      .internalError
+      (res, error.message);
   }
 });
 

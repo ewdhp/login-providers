@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const appId = '1723269141315315';
-const appSecret = '3680616783617af81e4a49dd6cc94aeb';
+const appId = '';
+const appSecret = '';
 const testUserUrl = `https://graph.facebook.com/v12.0/${appId}/accounts/test-users`;
 
 async function deleteTestUsers() {

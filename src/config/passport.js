@@ -1,8 +1,6 @@
 import dotenv from 'dotenv';
 import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
-
-// Load environment variables
 dotenv.config();
 
 // Define authentication strategies
@@ -24,25 +22,18 @@ authStrategies.forEach(({ name, Strategy, options }) => {
   passport.use(
     name,
     new Strategy(options, (accessToken, refreshToken, profile, done) => {
-      console.log('Facebook accessToken:', accessToken); // Debugging: Log the access token
-      console.log('Facebook profile:', profile); // Debugging: Log the profile
-
-      // Pass the accessToken and profile to the next middleware
+      console.log('Facebook accessToken:', accessToken); 
+      console.log('Facebook profile:', profile);
       return done(null, { ...profile, accessToken });
     })
   );
 });
 
-// Serialize user into the session
 passport.serializeUser((user, done) => {
-  // Store only the user ID in the session
   done(null, user.id);
 });
 
-// Deserialize user from the session
 passport.deserializeUser((id, done) => {
-  // Retrieve the user object based on the ID
-  // In a real application, you would fetch the user from the database
   done(null, { id });
 });
 

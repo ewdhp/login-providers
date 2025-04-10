@@ -43,7 +43,8 @@ class ResponseHandler {
     });
   }
 
-  static internalError(res, message = 'Internal Server Error') {
+  static internalError
+  (res, message = 'Internal Server Error') {
     return res.status(500).json({
       success: false,
       message,

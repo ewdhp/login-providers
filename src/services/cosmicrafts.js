@@ -13,7 +13,6 @@ const cosmicraftsFromSub = async (userId) => {
       base64Decode(publicKeyBase64),
       base64Decode(privateKeyBase64)
     );
-
   const isLocal = process.env.DFX !== 'ic';
   const host = isLocal ? 'http://localhost:3000' : 'https://ic0.app';
   const agent = new HttpAgent({ identity, host: host });
@@ -28,6 +27,7 @@ const cosmicraftsFromSub = async (userId) => {
     }
   );
 };
+
 const cosmicraftsPublic = async () => {
   const agent = new HttpAgent
     ({ host: 'https://ic0.app' });

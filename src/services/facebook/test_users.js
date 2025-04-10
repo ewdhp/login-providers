@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { faker } from '@faker-js/faker';
 
-const appId = '1723269141315315';
-const appSecret = '3680616783617af81e4a49dd6cc94aeb';
+const appId = '';
+const appSecret = '';
 
 // Generate random user data
 const userData = {
