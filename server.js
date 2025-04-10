@@ -7,9 +7,9 @@ import session from 'express-session';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-
+import authenticateToken from './src/middleware/token_verify.js';
 import authRoutes from './src/controllers/auth.js';
-import { protectedRoutes } from './src/controllers/protected.js';
+import { facebookRoutes } from './src/controllers/facebook.js';
 
 // Load environment variables
 dotenv.config();
@@ -41,7 +41,8 @@ app.use(passport.session());
 
 // Routes
 app.use('/auth', authRoutes);
-app.use('/api', protectedRoutes);
+app.use('/api', authenticateToken, facebookRoutes);
+
 
 // Default route for undefined endpoints
 app.use((req, res) => {

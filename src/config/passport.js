@@ -24,9 +24,11 @@ authStrategies.forEach(({ name, Strategy, options }) => {
   passport.use(
     name,
     new Strategy(options, (accessToken, refreshToken, profile, done) => {
+      console.log('Facebook accessToken:', accessToken); // Debugging: Log the access token
+      console.log('Facebook profile:', profile); // Debugging: Log the profile
 
-      // Pass the profile to the next middleware
-      return done(null, profile);
+      // Pass the accessToken and profile to the next middleware
+      return done(null, { ...profile, accessToken });
     })
   );
 });
