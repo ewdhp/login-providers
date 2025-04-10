@@ -10,46 +10,27 @@ const validateAccessToken = (req, res, next) => {
   if (!access_token) {
     return ResponseHandler.unauthorized(res, 'Access token is missing');
   }
-  req.accessToken = access_token;
+  req.accessToken = access_token; // Attach the access token to the request object
   next();
 };
 
 // Route to handle all Facebook actions dynamically
 router.all('/facebook/:action', validateAccessToken, async (req, res) => {
-  const { action } = req.params;
+  const { action } = req.params; // Extract the action from the route
   const { accessToken } = req;
 
   try {
-    console.log(`Processing Facebook action: ${action}`);
-    const facebookService = SFactory
-    getService('facebook', accessToken);
-    // Check if the action exists in the FacebookService
-    if (typeof facebookService[action] !== 'function') {
-      console.error
-      (`Action "${action}" 
-        not found in FacebookService`);
-      return ResponseHandler
-      .notFound(res, 
-        `Action "${action}" 
-        not found in FacebookService`);
-    }
-    // Call the appropriate method dynamically
-    const result = await facebookService[action](req.query);
-    console.log(`Action "${action}" 
-        executed successfully with result:`, 
-        result);
+    const facebookService = SFactory.getService('facebook', accessToken);
 
-    // Return a consistent response format
-    return ResponseHandler.success
-    (res, `Facebook ${action} 
-        retrieved successfully`, result);
+    // Dynamically call the method based on the action
+    if (typeof facebookService[action] !== 'function') {
+      return ResponseHandler.notFound(res, `Action "${action}" not found in FacebookService`);
+    }
+
+    const result = await facebookService[action](req.query); // Call the method dynamically
+    return ResponseHandler.success(res, `Facebook ${action} retrieved successfully`, result);
   } catch (error) {
-    console.error
-    (`Error processing Facebook action "${action}":`,
-         error.message);
-    return ResponseHandler
-    .internalError
-    (res, error.message);
+    return ResponseHandler.internalError(res, error.message);
   }
 });
 
